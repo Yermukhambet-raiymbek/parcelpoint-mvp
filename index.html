@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ParcelPoint — Secure parcel pickup hub for dormitories (MVP prototype)</title>
+  <meta name="description" content="Interactive MVP prototype of ParcelPoint: courier check-in, one-time QR pickup, notifications and an audit log for university dormitory parcels. CS-2430 final project, Astana IT University.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f2a43'/%3E%3Crect x='7' y='7' width='7' height='7' fill='%23b7f25b'/%3E%3Crect x='18' y='7' width='7' height='7' fill='%23fff'/%3E%3Crect x='7' y='18' width='7' height='7' fill='%23fff'/%3E%3Crect x='18' y='18' width='3' height='3' fill='%23b7f25b'/%3E%3Crect x='23' y='23' width='3' height='3' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#overview" data-view="overview" aria-label="ParcelPoint home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <rect x="1" y="1" width="9" height="9" fill="#b7f25b"></rect>
+          <rect x="13" y="1" width="9" height="9" fill="#ffffff"></rect>
+          <rect x="25" y="1" width="6" height="6" fill="#b7f25b"></rect>
+          <rect x="1" y="13" width="9" height="9" fill="#ffffff"></rect>
+          <rect x="13" y="13" width="6" height="6" fill="#b7f25b"></rect>
+          <rect x="25" y="13" width="6" height="9" fill="#ffffff"></rect>
+          <rect x="1" y="25" width="9" height="6" fill="#b7f25b"></rect>
+          <rect x="13" y="25" width="9" height="6" fill="#ffffff"></rect>
+          <rect x="25" y="25" width="6" height="6" fill="#b7f25b"></rect>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <strong>ParcelPoint</strong>
+        <small>Every parcel. One secure pickup.</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Prototype sections">
+      <button class="nav-btn is-active" type="button" data-view="overview">Overview</button>
+      <button class="nav-btn" type="button" data-view="courier">Courier check-in</button>
+      <button class="nav-btn" type="button" data-view="student">Student</button>
+      <button class="nav-btn" type="button" data-view="audit">Audit log</button>
+    </nav>
+
+    <button class="ghost-btn" type="button" id="resetBtn" title="Restore the demo data">Reset demo</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= OVERVIEW ================= -->
+  <section class="view" id="view-overview">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">MVP prototype · CS-2430 Technological Entrepreneurship</p>
+        <h1>Every parcel.<br>One secure pickup.</h1>
+        <p class="lead" style="margin-top:18px">
+          ParcelPoint replaces the "left at the entrance" dorm delivery loop with one secure hub,
+          one courier check-in and one one-time QR pickup — with a timestamped record of every hand-off.
+          This clickable prototype demonstrates the full student and courier journey of the MVP.
+        </p>
+        <div class="hero-cta">
+          <button class="btn primary" type="button" data-view="courier">Check in a parcel</button>
+          <button class="btn secondary" type="button" data-view="student">I'm a student — find my parcel</button>
+        </div>
+        <p class="hero-note">
+          Demo runs in your browser (no backend). Seeded student: <strong>room 214</strong>, phone last 4 digits <strong>0417</strong>.
+        </p>
+      </div>
+
+      <aside class="phone-card" aria-label="Example student notification">
+        <div class="phone-top"><span class="dot" aria-hidden="true"></span><span>Student notification</span></div>
+        <div class="msg">
+          <strong>ParcelPoint · AITU Dormitory 1</strong><br>
+          Parcel <code>PP-7K2M</code> from <strong>Kaspi.kz Post</strong> is waiting in the hub.
+          Open your one-time QR and pick it up at the entrance locker.
+          <div class="time">Telegram / SMS · just now</div>
+        </div>
+        <div class="qr-mini">
+          <svg id="heroQr" role="img" aria-label="Example one-time pickup QR code"></svg>
+          <p><strong>One-time code</strong>Single use, tied to this parcel</p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><b>1</b><span>AITU dormitory in the pilot scope</span></div>
+      <div class="stat lime"><b>&lt; 30 s</b><span>Courier check-in for a whole building drop</span></div>
+      <div class="stat"><b>100%</b><span>Hand-offs recorded in the audit log</span></div>
+    </div>
+
+    <div class="section-title"><h3>How it works</h3><span class="rule"></span></div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span>
+        <h4>Drop</h4>
+        <p>Courier checks in every parcel for the building at one hub in a single stop.</p>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <h4>Notify</h4>
+        <p>Student receives a Telegram / SMS message with a one-time QR code.</p>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <h4>Pick up</h4>
+        <p>Student scans at the locker any time; the hand-off is logged automatically.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>MVP boundary:</strong> this prototype proves the check-in → notification → one-time QR → audit loop.
+      Locker hardware, carrier API integration, payments and multi-campus rollout are deliberately outside the MVP.
+      Data lives in your browser and can be restored with <em>Reset demo</em>.
+    </div>
+  </section>
+
+  <!-- ================= COURIER ================= -->
+  <section class="view hidden" id="view-courier">
+    <div class="view-head">
+      <p class="eyebrow">01 · Courier</p>
+      <h2>Check parcels into the hub</h2>
+      <p class="lead-sm">One drop-off for the whole building. Every parcel gets a unique ID and a one-time pickup QR code that is sent to the student.</p>
+    </div>
+
+    <div class="two-col">
+      <form class="card form-card" id="courierForm" novalidate>
+        <h3>New check-in</h3>
+        <p class="card-sub">Fields marked <span style="color:var(--coral)">*</span> are required.</p>
+
+        <div class="field-row">
+          <div class="field" id="f-dorm">
+            <label for="dorm">Dormitory <span class="req">*</span></label>
+            <select id="dorm" name="dorm" required>
+              <option value="">Select dormitory</option>
+            </select>
+            <span class="err">Choose a dormitory.</span>
+          </div>
+          <div class="field" id="f-carrier">
+            <label for="carrier">Carrier <span class="req">*</span></label>
+            <select id="carrier" name="carrier" required>
+              <option value="">Select carrier</option>
+            </select>
+            <span class="err">Choose a carrier.</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field" id="f-room">
+            <label for="room">Room number <span class="req">*</span></label>
+            <input id="room" name="room" inputmode="numeric" placeholder="214" autocomplete="off" required>
+            <span class="err">Enter the room number.</span>
+          </div>
+          <div class="field" id="f-phone">
+            <label for="phone">Student phone · last 4 digits <span class="req">*</span></label>
+            <input id="phone" name="phone" inputmode="numeric" maxlength="4" placeholder="0417" autocomplete="off" required>
+            <span class="err">Enter the last 4 digits of the student's phone.</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field" id="f-student">
+            <label for="student">Student name <span class="req">*</span></label>
+            <input id="student" name="student" placeholder="Bekzat E." autocomplete="off" required>
+            <span class="err">Enter the student's name.</span>
+          </div>
+          <div class="field" id="f-count">
+            <label for="count">Parcels in this drop</label>
+            <select id="count" name="count">
+              <option value="1">1 parcel</option>
+              <option value="2">2 parcels</option>
+              <option value="3">3 parcels</option>
+              <option value="4">4 parcels</option>
+              <option value="5">5 parcels</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn primary" type="submit" style="width:100%">Check in parcel</button>
+        <p class="hint">
+          Tip: check in a parcel for room <code>214</code> / phone <code>0417</code>, then open the
+          <button type="button" class="btn small secondary" data-view="student" style="padding:2px 8px;font-size:12px;vertical-align:baseline">Student</button>
+          view to receive it.
+        </p>
+      </form>
+
+      <aside class="card">
+        <h3>Latest hub activity</h3>
+        <p class="card-sub">Most recent check-ins and pickups across the pilot hubs.</p>
+        <ul class="feed" id="courierFeed"></ul>
+      </aside>
+    </div>
+
+    <div class="card result-card hidden" id="checkinResult" aria-live="polite"></div>
+  </section>
+
+  <!-- ================= STUDENT ================= -->
+  <section class="view hidden" id="view-student">
+    <div class="view-head">
+      <p class="eyebrow">02 · Student</p>
+      <h2>Find my parcel</h2>
+      <p class="lead-sm">Identify yourself by room and phone digits, then open the one-time QR code and pick the parcel up at the hub.</p>
+    </div>
+
+    <div class="two-col">
+      <form class="card form-card" id="studentForm" novalidate>
+        <h3>Identify yourself</h3>
+        <p class="card-sub">No account, no password — room + phone digits is enough for the MVP.</p>
+        <div class="field-row">
+          <div class="field" id="s-f-room">
+            <label for="s-room">Room number <span class="req">*</span></label>
+            <input id="s-room" inputmode="numeric" placeholder="214" autocomplete="off" required>
+            <span class="err">Enter your room number.</span>
+          </div>
+          <div class="field" id="s-f-phone">
+            <label for="s-phone">Phone · last 4 digits <span class="req">*</span></label>
+            <input id="s-phone" inputmode="numeric" maxlength="4" placeholder="0417" autocomplete="off" required>
+            <span class="err">Enter the last 4 digits of your phone.</span>
+          </div>
+        </div>
+        <button class="btn primary" type="submit" style="width:100%">Find my parcels</button>
+        <p class="hint">Demo student: room <code>214</code> · phone <code>0417</code>.</p>
+      </form>
+
+      <aside class="card">
+        <h3>Notifications</h3>
+        <p class="card-sub">Messages sent to the student's Telegram / SMS.</p>
+        <ul class="feed" id="notificationFeed"></ul>
+      </aside>
+    </div>
+
+    <div id="studentResults" class="results"></div>
+    <div class="empty-state hidden" id="studentEmpty">No parcels found for this room and phone. Ask the courier for a check-in, or use the demo student above.</div>
+  </section>
+
+  <!-- ================= AUDIT ================= -->
+  <section class="view hidden" id="view-audit">
+    <div class="view-head">
+      <p class="eyebrow">03 · Audit log</p>
+      <h2>Every hand-off is recorded</h2>
+      <p class="lead-sm">The audit log is the accountability layer of ParcelPoint: who dropped the parcel, when, who picked it up and at which hub.</p>
+    </div>
+
+    <div class="stats-row" id="auditStats" style="margin-top:22px"></div>
+
+    <div class="card">
+      <div class="table-tools">
+        <h3>Hand-off log</h3>
+        <select id="auditDormFilter" aria-label="Filter audit log by dormitory"></select>
+        <button class="btn small secondary" type="button" id="downloadAudit">Download JSON</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Time</th><th>Actor</th><th>Action</th><th>Parcel</th><th>Dormitory</th><th>Detail</th></tr>
+          </thead>
+          <tbody id="auditBody"></tbody>
+        </table>
+      </div>
+      
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>ParcelPoint MVP prototype · Bekzat Erkeshuly · CS-2430 · Astana IT University</span>
+    <span>Demo data is stored locally in your browser.</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="qr-dialog" id="qrDialog">
+  <div class="qr-head">
+    <span class="badge">One-time pickup code</span>
+    <button class="close-btn" type="button" id="closeQr" aria-label="Close">×</button>
+  </div>
+  <div class="qr-body">
+    <div class="qr-holder" id="qrHolder"></div>
+    <p class="qr-title" id="qrTitle"></p>
+    <p class="qr-code" id="qrCodeText"></p>
+    <p class="qr-hint">Single use · valid for one pickup · tied to the parcel ID</p>
+  </div>
+  <div class="qr-actions">
+    <button class="btn primary" type="button" id="scanBtn">Simulate scan at hub</button>
+    <button class="btn secondary" type="button" id="closeQr2">Close</button>
+  </div>
+</dialog>
+
+<script src="qrcode.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
